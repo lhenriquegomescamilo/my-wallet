@@ -6,9 +6,11 @@ import com.expediagroup.graphql.server.ktor.graphQLSDLRoute
 import com.expediagroup.graphql.server.ktor.graphiQLRoute
 import com.expediagroup.graphql.server.operations.Query
 import com.mywallet.plugins.Neo4jConnection
+import com.typesafe.config.ConfigFactory
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.cio.CIO
+import io.ktor.server.config.HoconApplicationConfig
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.routing.routing
 
@@ -34,12 +36,14 @@ fun Application.module() {
 }
 
 class WalletQuery(
-    private val connection: Neo4jConnection = Neo4jConnection(
-        "bolt://localhost:7687",
-        "neo4j",
-        "password"
-    )
+    config: HoconApplicationConfig = HoconApplicationConfig(ConfigFactory.load())
 ) : Query {
+    private var connection: Neo4jConnection = Neo4jConnection(
+        config.property("ktor.database.neo4j.uri").getString(),
+        config.property("ktor.database.neo4j.user").getString(),
+        config.property("ktor.database.neo4j.password").getString(),
+    )
+
     fun hello() = "Hello world"
 
     fun findAll(): List<Player> {
