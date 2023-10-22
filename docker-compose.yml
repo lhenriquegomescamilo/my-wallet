@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  my-wallet-db:
+    image: neo4j:community-ubi8
+    container_name: my-wallet-db
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password
+    volumes:
+      - $HOME/neo4j/data:/data
+      - $HOME/neo4j/logs:/logs
+      - $HOME/neo4j/import:/var/lib/neo4j/import
+      - $HOME/neo4j/plugins:/plugins

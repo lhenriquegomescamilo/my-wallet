@@ -31,3 +31,20 @@ In order to generate GraalVM native image we need to run following task
 ### Running Native Image
 
 Once application is compiled by
+
+### How to run neo4j
+1. You could also use the docker run to start using neo4j, example:
+```shell
+ docker run \                                                                                                                                                                   ─╯
+    --name testneo4j \
+    -p7474:7474 -p7687:7687 \
+    -d \
+    -v $HOME/neo4j/data:/data \
+    -v $HOME/neo4j/logs:/logs \
+    -v $HOME/neo4j/import:/var/lib/neo4j/import \
+    -v $HOME/neo4j/plugins:/plugins \
+    --env NEO4J_AUTH=neo4j/password \
+    neo4j:community-ubi8
+
+```
+2. You could also use the command: `docker-compose up -d  my-wallet-db`

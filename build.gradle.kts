@@ -27,6 +27,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.expediagroup/graphql-kotlin-server
     implementation("com.expediagroup", "graphql-kotlin-ktor-server", "7.0.1")
 
+    implementation("org.neo4j.driver", "neo4j-java-driver", "5.12.0")
+
     implementation("io.ktor:ktor-server-cio-jvm")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     testImplementation("io.ktor:ktor-server-tests-jvm")
