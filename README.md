@@ -47,4 +47,4 @@ Once application is compiled by
     neo4j:community-ubi8
 
 ```
-2. You could also use the command: `docker-compose up -d  my-wallet-db`
+2. You could also use the command: `$ docker-compose up -d  my-wallet-db`
