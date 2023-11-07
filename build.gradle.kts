@@ -31,6 +31,7 @@ dependencies {
     implementation("com.expediagroup", "graphql-kotlin-ktor-server", expedia_graphql_version)
 
     implementation("org.neo4j.driver", "neo4j-java-driver", neo4j_driver_version)
+    implementation("org.neo4j:neo4j-cypher-dsl:2023.7.0")
 
     implementation("io.ktor:ktor-server-cio-jvm")
     implementation("ch.qos.logback:logback-classic:$logback_version")
@@ -40,6 +41,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm")
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
