@@ -3,7 +3,11 @@
 * This Kotlin script file lets you automate build activities
 * For more info, see https://www.jetbrains.com/help/space/automation.html
 */
-
 job("Build and run tests") {
-   gradlew("amazoncorretto:17-alpine", "build")
+    container(displayName = "Run gradle build", image = "amazoncorretto:17-alpine") {
+        kotlinScript { api ->
+            // here can be your complex logic
+            api.gradlew("build")
+        }
+    }
 }
