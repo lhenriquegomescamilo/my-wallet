@@ -2,6 +2,7 @@ package com.mywallet.infrastructure.category.graphql
 
 import com.expediagroup.graphql.server.operations.Mutation
 import com.mywallet.application.category.usecases.CreateCategoryUseCase
+import com.mywallet.domain.entity.ValidationError
 import graphql.GraphqlErrorException
 import graphql.execution.DataFetcherResult
 
@@ -15,9 +16,16 @@ class CategoryMutation(private val categoryUseCase: CreateCategoryUseCase) : Mut
             .getOrElse { exception ->
                 dataFetcherResult {
                     data(CategoryOutput(publicId = "", name = ""))
-                    error(
-                        graphqlError { message(exception.localizedMessage) }
-                    )
+                    if (exception is ValidationError) {
+                        val validationErrors =
+                            exception.validations.map { errorMessage -> graphqlError { message(errorMessage.message) } }
+                        errors(validationErrors)
+                    } else {
+                        error(
+                            graphqlError { message(exception.localizedMessage) }
+                        )
+                    }
+
                 }
             }
     }

@@ -1,11 +1,5 @@
 package com.mywallet.plugins
 
-import com.mywallet.application.category.usecases.CreateCategoryUseCase
-import com.mywallet.infrastructure.category.gateways.CategoryRepositoryGateway
-import com.mywallet.infrastructure.category.graphql.CategoryMutation
-import com.mywallet.infrastructure.category.graphql.CategoryQuery
-import com.mywallet.myWalletModule
-import io.ktor.server.application.Application
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import org.junit.After

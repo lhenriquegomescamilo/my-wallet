@@ -6,7 +6,8 @@ import com.expediagroup.graphql.server.ktor.graphQLPostRoute
 import com.expediagroup.graphql.server.ktor.graphQLSDLRoute
 import com.expediagroup.graphql.server.ktor.graphiQLRoute
 import com.mywallet.application.category.usecases.CreateCategoryUseCase
-import com.mywallet.infrastructure.category.gateways.CategoryRepositoryGateway
+import com.mywallet.infrastructure.category.gateways.CategoryGateway
+import com.mywallet.infrastructure.category.gateways.CategoryValidation
 import com.mywallet.infrastructure.category.graphql.CategoryMutation
 import com.mywallet.infrastructure.category.graphql.CategoryQuery
 import com.mywallet.plugins.DatabaseConnectionConfig
@@ -47,7 +48,8 @@ fun main() {
             mutations = listOf(
                 CategoryMutation(
                     CreateCategoryUseCase(
-                        CategoryRepositoryGateway(neo4jConnection)
+                        CategoryGateway(neo4jConnection),
+                        CategoryValidation()
                     )
                 )
             )

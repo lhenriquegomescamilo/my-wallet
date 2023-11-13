@@ -1,11 +1,9 @@
 package com.mywallet.infrastructure.category.gateways
 
 import com.mywallet.DatabaseConnection
-import com.mywallet.application.category.gateways.CategoryGateway
+import com.mywallet.application.category.gateways.CategoryRepositoryGateway
 import com.mywallet.domain.entity.Category
 import org.neo4j.cypherdsl.core.Cypher
-import org.neo4j.cypherdsl.core.Expression
-import org.neo4j.cypherdsl.core.Expressions
 import org.neo4j.cypherdsl.core.Functions
 import org.neo4j.driver.Query
 import org.neo4j.driver.Session
@@ -19,11 +17,12 @@ data class CategoryModel(val publicId: String, val name: String) {
     }
 }
 
-class CategoryRepositoryGateway(private val connection: DatabaseConnection<Session>) : CategoryGateway {
+
+class CategoryGateway(private val connection: DatabaseConnection<Session>) : CategoryRepositoryGateway {
     override suspend fun create(category: Category): Category {
         val categoryModel = connection.session.executeWrite { transaction ->
 
-            val categoryNode = Cypher.node("Category").named("category");
+            val categoryNode = Cypher.node("Category").named("category")
             val statement = Cypher.create(categoryNode)
                 .set(categoryNode.property("publicId").to(Cypher.parameter("publicId")))
                 .set(categoryNode.property("name").to(Cypher.parameter("name")))

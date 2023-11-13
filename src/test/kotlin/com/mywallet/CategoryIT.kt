@@ -1,7 +1,8 @@
 package com.mywallet
 
 import com.mywallet.application.category.usecases.CreateCategoryUseCase
-import com.mywallet.infrastructure.category.gateways.CategoryRepositoryGateway
+import com.mywallet.infrastructure.category.gateways.CategoryGateway
+import com.mywallet.infrastructure.category.gateways.CategoryValidation
 import com.mywallet.infrastructure.category.graphql.CategoryMutation
 import com.mywallet.infrastructure.category.graphql.CategoryQuery
 import com.mywallet.plugins.MyWalletIntegrationConfig
@@ -36,7 +37,8 @@ class CategoryIT : MyWalletIntegrationConfig() {
         mutations = listOf(
             CategoryMutation(
                 CreateCategoryUseCase(
-                    CategoryRepositoryGateway(Neo4jConnection(connectionConfig))
+                    CategoryGateway(Neo4jConnection(connectionConfig)),
+                    CategoryValidation()
                 )
             )
         )
