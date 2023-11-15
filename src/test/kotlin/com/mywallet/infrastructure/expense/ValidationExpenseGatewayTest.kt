@@ -1,0 +1,86 @@
+package com.mywallet.infrastructure.expense
+
+import com.mywallet.domain.entity.Category
+import com.mywallet.domain.entity.Expense
+import com.mywallet.domain.entity.ExpenseDescription
+import com.mywallet.domain.entity.ExpenseStatus
+import com.mywallet.domain.entity.ExpenseType
+import com.mywallet.domain.entity.Owner
+import com.mywallet.domain.entity.Price
+import com.mywallet.infrastructure.expense.gatways.ValidationExpenseGateway
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import kotlinx.coroutines.runBlocking
+import java.math.BigDecimal
+import java.time.LocalDate
+
+
+class ValidationExpenseGatewayTest {
+
+
+    @Test
+    fun `it should validate an empty publicId of category from expense`(): Unit = runBlocking {
+
+        val expense = Expense(
+            category = Category(name = "Personal Trainer", publicId = ""),
+            price = Price(value = BigDecimal.valueOf(100.0), currencyMoney = "EUR"),
+            owner = Owner(name = "Luis Camilo"),
+            type = ExpenseType.FIXED,
+            status = ExpenseStatus.NOT_PAID,
+            description = ExpenseDescription("Box"),
+            expireDate = LocalDate.now().plusDays(20),
+            paymentDate = null
+        )
+        val expenseValidation = ValidationExpenseGateway()
+        val output = expenseValidation.validate(expense)
+        assertTrue { output.first.isNotEmpty() }
+        assertEquals(1, output.first.size)
+        assertEquals("category.publicId", output.first.first().key)
+
+    }
+
+
+    @Test
+    fun `it should validate an empty publicId of category and price is ZERO`(): Unit = runBlocking {
+
+        val expense = Expense(
+            category = Category(name = "Personal Trainer", publicId = ""),
+            price = Price(value = BigDecimal.ZERO, currencyMoney = "EUR"),
+            owner = Owner(name = "Luis Camilo"),
+            type = ExpenseType.FIXED,
+            status = ExpenseStatus.NOT_PAID,
+            description = ExpenseDescription("Box"),
+            expireDate = LocalDate.now().plusDays(20),
+            paymentDate = null
+        )
+        val expenseValidation = ValidationExpenseGateway()
+        val output = expenseValidation.validate(expense)
+        assertTrue { output.first.isNotEmpty() }
+        assertEquals(2, output.first.size)
+        assertEquals("price.value", output.first[output.first.lastIndex].key)
+
+    }
+
+    @Test
+    fun `it should validate an empty publicId of category and price is empty currency`(): Unit = runBlocking {
+
+        val expense = Expense(
+            category = Category(name = "Personal Trainer", publicId = ""),
+            price = Price(value = BigDecimal.valueOf(20.12), currencyMoney = ""),
+            owner = Owner(name = "Luis Camilo"),
+            type = ExpenseType.FIXED,
+            status = ExpenseStatus.NOT_PAID,
+            description = ExpenseDescription("Box"),
+            expireDate = LocalDate.now().plusDays(20),
+            paymentDate = null
+        )
+        val expenseValidation = ValidationExpenseGateway()
+        val output = expenseValidation.validate(expense)
+        assertTrue { output.first.isNotEmpty() }
+        assertEquals(2, output.first.size)
+        assertEquals("price.currencyMoney", output.first[output.first.lastIndex].key)
+
+    }
+
+}
