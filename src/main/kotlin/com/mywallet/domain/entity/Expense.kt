@@ -6,14 +6,14 @@ import java.util.UUID
 
 data class Price(val value: BigDecimal, val currencyMoney: String) {}
 
-data class Owner(val publicId: String = UUID.randomUUID().toString(), val name: String) {}
+data class Owner(val publicId: String = UUID.randomUUID().toString(), val name: String)
 
 enum class ExpenseType {
-    FIXED, VARIABLE;
+    FIXED, VARIABLE, EMPTY;
 }
 
 enum class ExpenseStatus {
-    PAID, NOT_PAID;
+    PAID, NOT_PAID, EMPTY;
 }
 
 data class ExpenseDescription(val description: String) {
@@ -32,6 +32,8 @@ data class Expense(
     val paymentDate: LocalDate? = null
 )
 
+typealias ErrorsOrExpense = Pair<List<ErrorMessage>, Expense>
+
 sealed class ExpenseValidation(open val name: String = "", open val key: String = "") {
     class CategoryPublicIdError(
         override val name: String = "Property publicId couldn't be empty",
@@ -46,6 +48,23 @@ sealed class ExpenseValidation(open val name: String = "", open val key: String 
     class PriceCurrencyValidation(
         override val name: String = "Property price.currency could not be empty",
         override val key: String = "price.currencyMoney"
+    ) : ExpenseValidation(name, key)
+
+    class OwnerPublicIdValidation(
+        override val name: String = "Property owner.publicId could not be empty",
+        override val key: String = "owner.publicId"
+    ) : ExpenseValidation(name, key)
+
+
+    class TypeValidation(
+        override val name: String = "Property type could not be empty",
+        override val key: String = "type"
+    ) : ExpenseValidation(name, key)
+
+
+    class StatusValidation(
+        override val name: String = "Property status could not be empty",
+        override val key: String = "status"
     ) : ExpenseValidation(name, key)
 }
 
