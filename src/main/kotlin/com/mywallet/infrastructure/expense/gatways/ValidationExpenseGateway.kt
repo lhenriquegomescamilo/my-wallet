@@ -1,13 +1,11 @@
 package com.mywallet.infrastructure.expense.gatways
 
-import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.zipOrAccumulate
 import com.mywallet.application.ValidationGateway
 import com.mywallet.domain.entity.Category
-import com.mywallet.domain.entity.ErrorMessage
 import com.mywallet.domain.entity.ErrorsOrExpense
 import com.mywallet.domain.entity.Expense
 import com.mywallet.domain.entity.ExpenseStatus
@@ -22,22 +20,22 @@ import com.mywallet.domain.entity.ExpenseValidation.StatusValidation
 import com.mywallet.domain.entity.ExpenseValidation.TypeValidation
 import com.mywallet.domain.entity.Owner
 import com.mywallet.domain.entity.Price
+import com.mywallet.infrastructure.utils.leftOrEmpty
+import com.mywallet.infrastructure.utils.runConstraints
 import java.math.BigDecimal
 
 class ValidationExpenseGateway : ValidationGateway<Expense> {
-    override suspend fun validate(input: Expense) = listOf(
-        validateCategory(input.category).leftOrEmpty(),
-        validateOwner(input.owner).leftOrEmpty(),
-        validatePrice(input.price).leftOrNull() ?: emptyList(),
-        validateType(input.type).leftOrEmpty(),
-        validateStatus(input.status).leftOrEmpty(),
-        validatePaymentDate(input).leftOrEmpty()
-    )
-        .flatMap { validations -> validations.map { ErrorMessage(it.name, it.key) } }
-        .let { ErrorsOrExpense(it, input) }
+    override suspend fun validate(input: Expense): ErrorsOrExpense {
+        return runConstraints(input) {
+            validateCategory(input.category).leftOrEmpty() +
+                    validateOwner(input.owner).leftOrEmpty() +
+                    (validatePrice(input.price).leftOrNull() ?: emptyList()) +
+                    validateType(input.type).leftOrEmpty() +
+                    (validateStatus(input.status).leftOrEmpty()) +
+                    validatePaymentDate(input).leftOrEmpty()
+        }
+    }
 
-
-    private fun <T> Either<ExpenseValidation, T>.leftOrEmpty() = this.leftOrNull()?.let(::listOf) ?: emptyList()
 
     private fun validateCategory(category: Category) = either {
         ensure(category.publicId.isNotEmpty()) { CategoryPublicIdError() }

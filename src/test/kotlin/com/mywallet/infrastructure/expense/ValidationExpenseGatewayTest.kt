@@ -32,8 +32,7 @@ class ValidationExpenseGatewayTest {
             expireDate = LocalDate.now().plusDays(20),
             paymentDate = null
         )
-        val expenseValidation = ValidationExpenseGateway()
-        val output = expenseValidation.validate(expense)
+        val output = ValidationExpenseGateway().validate(expense)
         assertTrue { output.first.isNotEmpty() }
         assertEquals(1, output.first.size)
         assertEquals("category.publicId", output.first.first().key)

@@ -4,9 +4,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
 
-data class Price(val value: BigDecimal, val currencyMoney: String) {}
-
-data class Owner(val publicId: String = UUID.randomUUID().toString(), val name: String)
+data class Price(val value: BigDecimal, val currencyMoney: String)
 
 enum class ExpenseType {
     FIXED, VARIABLE, EMPTY;
@@ -34,7 +32,7 @@ data class Expense(
 
 typealias ErrorsOrExpense = Pair<List<ErrorMessage>, Expense>
 
-sealed class ExpenseValidation(open val name: String = "", open val key: String = "") {
+sealed class ExpenseValidation(override val name: String = "", override val key: String = ""): Constraints(name, key) {
     class CategoryPublicIdError(
         override val name: String = "Property publicId couldn't be empty",
         override val key: String = "category.publicId"
