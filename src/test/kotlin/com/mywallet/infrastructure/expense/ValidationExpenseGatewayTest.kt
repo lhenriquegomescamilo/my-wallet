@@ -145,6 +145,27 @@ class ValidationExpenseGatewayTest {
         assertEquals("status", output.first.first().key)
     }
 
+    @Test
+    fun `it should return a error when payment date is defined and expense status is not paid`(): Unit = runBlocking {
+
+        val expense = Expense(
+            category = Category(name = "Personal Trainer", publicId = "b41b1817-5a97-43f6-bb68-a01bb0fb962f"),
+            price = Price(value = BigDecimal.valueOf(20.12), currencyMoney = "EUR"),
+            owner = Owner(name = "Luis Camilo", publicId = "5a21deb3-27b2-47e2-9d58-c20b236d6381"),
+            type = ExpenseType.VARIABLE,
+            status = ExpenseStatus.NOT_PAID,
+            description = ExpenseDescription("Box"),
+            expireDate = LocalDate.now().plusDays(20),
+            paymentDate = LocalDate.now()
+        )
+        val expenseValidation = ValidationExpenseGateway()
+        val output = expenseValidation.validate(expense)
+        assertTrue { output.first.isNotEmpty() }
+        assertEquals(1, output.first.size)
+        assertEquals("paymentDate", output.first.first().key)
+    }
+
+
 
 
 

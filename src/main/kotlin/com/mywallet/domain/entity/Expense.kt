@@ -66,5 +66,11 @@ sealed class ExpenseValidation(open val name: String = "", open val key: String 
         override val name: String = "Property status could not be empty",
         override val key: String = "status"
     ) : ExpenseValidation(name, key)
+
+    class InvalidPaymentDate(
+        override val name: String = "Invalid payment date",
+        override val key: String = "paymentDate"
+    ) : ExpenseValidation(name, key)
+
 }
 

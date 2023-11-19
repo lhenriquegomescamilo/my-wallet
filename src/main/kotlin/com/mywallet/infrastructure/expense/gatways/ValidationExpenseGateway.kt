@@ -14,6 +14,7 @@ import com.mywallet.domain.entity.ExpenseStatus
 import com.mywallet.domain.entity.ExpenseType
 import com.mywallet.domain.entity.ExpenseValidation
 import com.mywallet.domain.entity.ExpenseValidation.CategoryPublicIdError
+import com.mywallet.domain.entity.ExpenseValidation.InvalidPaymentDate
 import com.mywallet.domain.entity.ExpenseValidation.OwnerPublicIdValidation
 import com.mywallet.domain.entity.ExpenseValidation.PriceCurrencyValidation
 import com.mywallet.domain.entity.ExpenseValidation.PriceValueValidation
@@ -24,21 +25,21 @@ import com.mywallet.domain.entity.Price
 import java.math.BigDecimal
 
 class ValidationExpenseGateway : ValidationGateway<Expense> {
-    override suspend fun validate(input: Expense): ErrorsOrExpense {
-        return listOf(
-            validateCategory(input.category).leftOrEmpty(),
-            validateOwner(input.owner).leftOrEmpty(),
-            validatePrice(input.price).leftOrNull() ?: emptyList(),
-            validateType(input.type).leftOrEmpty(),
-            validateStatus(input.status).leftOrEmpty()
-        )
-            .flatMap { validations -> validations.map { ErrorMessage(it.name, it.key) } }
-            .let { ErrorsOrExpense(it, input) }
-    }
+    override suspend fun validate(input: Expense) = listOf(
+        validateCategory(input.category).leftOrEmpty(),
+        validateOwner(input.owner).leftOrEmpty(),
+        validatePrice(input.price).leftOrNull() ?: emptyList(),
+        validateType(input.type).leftOrEmpty(),
+        validateStatus(input.status).leftOrEmpty(),
+        validatePaymentDate(input).leftOrEmpty()
+    )
+        .flatMap { validations -> validations.map { ErrorMessage(it.name, it.key) } }
+        .let { ErrorsOrExpense(it, input) }
+
 
     private fun <T> Either<ExpenseValidation, T>.leftOrEmpty() = this.leftOrNull()?.let(::listOf) ?: emptyList()
 
-    private fun validateCategory(category: Category) = either<ExpenseValidation, Category> {
+    private fun validateCategory(category: Category) = either {
         ensure(category.publicId.isNotEmpty()) { CategoryPublicIdError() }
         category
     }
@@ -50,18 +51,25 @@ class ValidationExpenseGateway : ValidationGateway<Expense> {
         ) { _, _ -> price }
     }
 
-    private fun validateOwner(owner: Owner) = either<ExpenseValidation, Owner> {
+    private fun validateOwner(owner: Owner) = either {
         ensure(owner.publicId.isNotEmpty()) { OwnerPublicIdValidation() }
         owner
     }
 
-    private fun validateType(type: ExpenseType) = either<ExpenseValidation, ExpenseType> {
+    private fun validateType(type: ExpenseType) = either {
         ensure(type != ExpenseType.EMPTY) { TypeValidation() }
         type
     }
 
-    private fun validateStatus(status: ExpenseStatus) = either<ExpenseValidation, ExpenseStatus> {
+    private fun validateStatus(status: ExpenseStatus) = either {
         ensure(status != ExpenseStatus.EMPTY) { StatusValidation() }
         status
+    }
+
+    private fun validatePaymentDate(expense: Expense) = either {
+        if (expense.paymentDate != null) {
+            ensure(expense.status != ExpenseStatus.NOT_PAID) { InvalidPaymentDate() }
+        }
+        expense
     }
 }
