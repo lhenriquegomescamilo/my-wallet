@@ -1,7 +1,7 @@
 package com.mywallet.application.owner.usecases
 
 import com.mywallet.application.ValidationGateway
-import com.mywallet.application.owner.gateways.CreateOwnerGateway
+import com.mywallet.application.owner.gateways.CreateOwnerRepositoryGateway
 import com.mywallet.domain.entity.ErrorMessage
 import com.mywallet.domain.entity.Owner
 import com.mywallet.domain.entity.OwnerConstraint
@@ -20,8 +20,8 @@ class CreateOwnerUseCaseTest {
     @Test
     fun `it should create a owner`(): Unit = runBlocking {
         val input = Owner(name = "Luis Camilo", publicId = "")
-        val createOwnerGateway = object : CreateOwnerGateway {
-            override suspend fun save(input: Owner): Owner {
+        val createOwnerRepositoryGateway = object : CreateOwnerRepositoryGateway {
+            override suspend fun create(input: Owner): Owner {
                 return input.copy(publicId = UUID.randomUUID().toString())
             }
         }
@@ -31,7 +31,7 @@ class CreateOwnerUseCaseTest {
             }
 
         }
-        val result = CreateOwnerUseCase(createOwnerGateway, validationGateway).execute(input)
+        val result = CreateOwnerUseCase(createOwnerRepositoryGateway, validationGateway).execute(input)
         assertTrue { result.isSuccess }
         assertNotNull(result.getOrNull())
     }
@@ -39,8 +39,8 @@ class CreateOwnerUseCaseTest {
     @Test
     fun `it should return a error when the name of owner is empty`(): Unit = runBlocking {
         val input = Owner(name = "Luis Camilo", publicId = "")
-        val createOwnerGateway = object : CreateOwnerGateway {
-            override suspend fun save(input: Owner): Owner {
+        val createOwnerRepositoryGateway = object : CreateOwnerRepositoryGateway {
+            override suspend fun create(input: Owner): Owner {
                 return input.copy(publicId = UUID.randomUUID().toString())
             }
         }
@@ -54,7 +54,7 @@ class CreateOwnerUseCaseTest {
             }
 
         }
-        val result = CreateOwnerUseCase(createOwnerGateway, validationGateway).execute(input)
+        val result = CreateOwnerUseCase(createOwnerRepositoryGateway, validationGateway).execute(input)
         assertTrue { result.isFailure }
         assertNotNull(result.exceptionOrNull())
         assertIs<ValidationError>(result.exceptionOrNull())

@@ -20,7 +20,7 @@ class CreateCategoryUseCase(
         if (categoryRepositoryGateway.checkIfExists(input)) {
             return Result.failure(Exception("The category ${input.name} already exists"))
         }
-        return Result.success(categoryRepositoryGateway.create(input))
+        return runCatching { categoryRepositoryGateway.create(input) }
     }
 
 }

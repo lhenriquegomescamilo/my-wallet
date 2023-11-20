@@ -6,10 +6,17 @@ import com.expediagroup.graphql.server.ktor.graphQLPostRoute
 import com.expediagroup.graphql.server.ktor.graphQLSDLRoute
 import com.expediagroup.graphql.server.ktor.graphiQLRoute
 import com.mywallet.application.category.usecases.CreateCategoryUseCase
+import com.mywallet.application.owner.usecases.CreateOwnerUseCase
+import com.mywallet.application.owner.usecases.QueryOwnerUseCase
 import com.mywallet.infrastructure.category.gateways.CategoryGateway
 import com.mywallet.infrastructure.category.gateways.CategoryValidation
 import com.mywallet.infrastructure.category.graphql.CategoryMutation
 import com.mywallet.infrastructure.category.graphql.CategoryQuery
+import com.mywallet.infrastructure.owner.gateways.CreateOwnerRepository
+import com.mywallet.infrastructure.owner.gateways.QueryOwnerRepository
+import com.mywallet.infrastructure.owner.gateways.ValidateOwnerGateway
+import com.mywallet.infrastructure.owner.graphql.OwnerMutation
+import com.mywallet.infrastructure.owner.graphql.OwnerQuery
 import com.mywallet.plugins.DatabaseConnectionConfig
 import com.mywallet.plugins.Neo4jConnection
 import com.typesafe.config.ConfigFactory
@@ -44,12 +51,25 @@ fun main() {
     embeddedServer(CIO, port = 8080, host = "0.0.0.0", module = {
         myWalletModule {
             packages = listOf("com.mywallet")
-            queries = listOf(CategoryQuery())
+            queries = listOf(
+                CategoryQuery(),
+                OwnerQuery(
+                    queryOwnerUseCase = QueryOwnerUseCase(
+                        queryOwnerGateway = QueryOwnerRepository(neo4jConnection)
+                    )
+                )
+            )
             mutations = listOf(
                 CategoryMutation(
                     CreateCategoryUseCase(
-                        CategoryGateway(neo4jConnection),
-                        CategoryValidation()
+                        categoryRepositoryGateway = CategoryGateway(neo4jConnection),
+                        validationGateway = CategoryValidation()
+                    )
+                ),
+                OwnerMutation(
+                    CreateOwnerUseCase(
+                        createOwnerRepositoryGateway = CreateOwnerRepository(neo4jConnection),
+                        validateOwnerGateway = ValidateOwnerGateway()
                     )
                 )
             )

@@ -19,33 +19,30 @@ data class CategoryModel(val publicId: String, val name: String) {
 
 
 class CategoryGateway(private val connection: DatabaseConnection<Session>) : CategoryRepositoryGateway {
-    override suspend fun create(category: Category): Category {
-        val categoryModel = connection.session.executeWrite { transaction ->
+    override suspend fun create(category: Category): Category = connection.session.executeWrite { transaction ->
 
-            val categoryNode = Cypher.node("Category").named("category")
-            val statement = Cypher.create(categoryNode)
-                .set(categoryNode.property("publicId").to(Cypher.parameter("publicId")))
-                .set(categoryNode.property("name").to(Cypher.parameter("name")))
-                .returning(categoryNode)
-                .build()
+       val categoryNode = Cypher.node("Category").named("category")
+       val statement = Cypher.create(categoryNode)
+           .set(categoryNode.property("publicId").to(Cypher.parameter("publicId")))
+           .set(categoryNode.property("name").to(Cypher.parameter("name")))
+           .returning(categoryNode)
+           .build()
 
 
-            val query = Query(
-                statement.cypher,
-                mapOf(
-                    "publicId" to category.publicId,
-                    "name" to category.name
-                )
-            )
-            val result = transaction.run(query)
-            val node = result.single().get(0)
-            CategoryModel(
-                name = node.get("name").asString(),
-                publicId = node.get("publicId").asString()
-            )
-        }
-        return categoryModel.toDomain()
-    }
+       val query = Query(
+           statement.cypher,
+           mapOf(
+               "publicId" to category.publicId,
+               "name" to category.name
+           )
+       )
+       val result = transaction.run(query)
+       val node = result.single().get(0)
+       CategoryModel(
+           name = node.get("name").asString(),
+           publicId = node.get("publicId").asString()
+       )
+   }.toDomain()
 
     override suspend fun checkIfExists(category: Category): Boolean = connection.session.executeRead { transaction ->
         val categoryNode = Cypher.node("Category").named("category")

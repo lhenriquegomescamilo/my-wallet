@@ -1,8 +1,6 @@
 package com.mywallet.domain.entity
 
-import java.util.*
-
-data class Owner(val publicId: String = UUID.randomUUID().toString(), val name: String)
+data class Owner(val publicId: String = "", val name: String)
 
 sealed class OwnerConstraint(name: String = "", key: String = "") : Constraints(name, key) {
     class OwnerEmptyNameConstraints(
