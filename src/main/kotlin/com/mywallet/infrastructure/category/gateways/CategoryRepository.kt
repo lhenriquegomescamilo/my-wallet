@@ -18,7 +18,7 @@ data class CategoryModel(val publicId: String, val name: String) {
 }
 
 
-class CategoryGateway(private val connection: DatabaseConnection<Session>) : CategoryRepositoryGateway {
+class CategoryRepository(private val connection: DatabaseConnection<Session>) : CategoryRepositoryGateway {
     override suspend fun create(category: Category): Category = connection.session.executeWrite { transaction ->
 
        val categoryNode = Cypher.node("Category").named("category")
@@ -46,6 +46,7 @@ class CategoryGateway(private val connection: DatabaseConnection<Session>) : Cat
 
     override suspend fun checkIfExists(category: Category): Boolean = connection.session.executeRead { transaction ->
         val categoryNode = Cypher.node("Category").named("category")
+
         val statement = Cypher.match(categoryNode)
             .where(Functions.toLower(categoryNode.property("name")).isEqualTo(Cypher.parameter("name")))
             .with(Functions.count(categoryNode).gt(Cypher.parameter("min_categories")).`as`("category_exists"))

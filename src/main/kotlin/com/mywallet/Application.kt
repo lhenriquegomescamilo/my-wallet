@@ -65,7 +65,7 @@ fun main() {
             mutations = listOf(
                 CategoryMutation(
                     CreateCategoryUseCase(
-                        categoryRepositoryGateway = CategoryGateway(neo4jConnection),
+                        categoryRepositoryGateway = CategoryRepository(neo4jConnection),
                         validationGateway = CategoryValidation()
                     )
                 ),

@@ -1,12 +1,13 @@
 package com.mywallet
 
 import com.mywallet.application.category.usecases.CreateCategoryUseCase
-import com.mywallet.infrastructure.category.gateways.CategoryGateway
+import com.mywallet.infrastructure.category.gateways.CategoryRepository
 import com.mywallet.infrastructure.category.gateways.CategoryValidation
 import com.mywallet.infrastructure.category.graphql.CategoryMutation
 import com.mywallet.infrastructure.category.graphql.CategoryQuery
 import com.mywallet.plugins.MyWalletIntegrationConfig
 import com.mywallet.plugins.Neo4jConnection
+import com.mywallet.plugins.asJsonPrimitive
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -37,7 +38,7 @@ class CategoryIT : MyWalletIntegrationConfig() {
         mutations = listOf(
             CategoryMutation(
                 CreateCategoryUseCase(
-                    CategoryGateway(Neo4jConnection(connectionConfig)),
+                    CategoryRepository(Neo4jConnection(connectionConfig)),
                     CategoryValidation()
                 )
             )
@@ -56,6 +57,7 @@ class CategoryIT : MyWalletIntegrationConfig() {
               }
             }
           """
+        
 
         val bodyRequest = buildJsonObject {
             put("query", JsonPrimitive(query))
@@ -88,10 +90,10 @@ class CategoryIT : MyWalletIntegrationConfig() {
                 name,
               }
             }
-          """
+          """.asJsonPrimitive()
 
         val bodyRequest = buildJsonObject {
-            put("query", JsonPrimitive(query))
+            put("query", query)
         }
         val client = createClient {
             install(ContentNegotiation) {
