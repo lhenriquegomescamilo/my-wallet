@@ -27,6 +27,11 @@ abstract class MyWalletIntegrationConfig {
                 get() = neo4jContainer.adminPassword
 
         }
+
+        beforeTest(connectionConfig)
+    }
+
+    protected open fun beforeTest(connectionConfig: DatabaseConnectionConfig) {
     }
 
 

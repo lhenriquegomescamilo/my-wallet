@@ -4,7 +4,6 @@ import com.mywallet.application.owner.usecases.CreateOwnerUseCase
 import com.mywallet.application.owner.usecases.QueryOwnerUseCase
 import com.mywallet.infrastructure.owner.gateways.CreateOwnerRepository
 import com.mywallet.infrastructure.owner.gateways.QueryOwnerRepository
-import com.mywallet.infrastructure.owner.gateways.ValidateOwnerGateway
 import com.mywallet.infrastructure.owner.graphql.OwnerMutation
 import com.mywallet.infrastructure.owner.graphql.OwnerQuery
 import com.mywallet.plugins.MyWalletIntegrationConfig
@@ -48,8 +47,7 @@ class OwnerIT : MyWalletIntegrationConfig() {
         mutations = listOf(
             OwnerMutation(
                 useCase = CreateOwnerUseCase(
-                    createOwnerRepositoryGateway = CreateOwnerRepository(Neo4jConnection(connectionConfig)),
-                    validateOwnerGateway = ValidateOwnerGateway()
+                    createOwnerRepositoryGateway = CreateOwnerRepository(Neo4jConnection(connectionConfig))
                 )
             )
         )

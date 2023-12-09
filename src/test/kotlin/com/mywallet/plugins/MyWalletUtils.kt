@@ -1,10 +1,34 @@
 package com.mywallet.plugins
 
+import io.ktor.client.HttpClient
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.contentType
+import io.ktor.server.testing.ApplicationTestBuilder
 import kotlinx.serialization.json.JsonPrimitive
-import java.util.UUID
+import kotlinx.serialization.json.buildJsonObject
+import java.util.*
 
 fun String.asJsonPrimitive(): JsonPrimitive = JsonPrimitive(this)
 
 fun isValidUUID(input: String): Boolean {
     return runCatching { UUID.fromString(input) }.isSuccess
+}
+
+suspend fun ApplicationTestBuilder.httpGraphql(query: JsonPrimitive, client: HttpClient): HttpResponse {
+    val bodyRequest = buildJsonObject {
+        put("query", query)
+    }
+
+
+    val response = client.post("/graphql") {
+        header(HttpHeaders.ContentType, ContentType.Application.Json)
+        contentType(ContentType.Application.Json)
+        setBody(bodyRequest)
+    }
+    return response
 }
