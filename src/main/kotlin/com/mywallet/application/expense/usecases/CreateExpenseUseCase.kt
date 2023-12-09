@@ -8,7 +8,7 @@ import com.mywallet.domain.entity.Expense
 import com.mywallet.domain.entity.ValidationError
 
 class CreateExpenseUseCase(
-    private val expenseGateway: CreateExpenseGateway,
+    private val expenseGatewayRepository: CreateExpenseGateway,
     private val expenseValidation: ValidationGateway<Expense>
 ) : UseCase<Expense>() {
     override suspend fun execute(input: Expense): Result<Expense> {
@@ -16,10 +16,10 @@ class CreateExpenseUseCase(
         if (validations.isNotEmpty()) {
             return Result.failure(ValidationError(validations))
         }
-        if (expenseGateway.checkIfExists(input)) {
+        if (expenseGatewayRepository.checkIfExists(input)) {
             return Result.failure(ExpenseAlreadyExists())
         }
-        return Result.success(expenseGateway.create(input))
+        return Result.success(expenseGatewayRepository.create(input))
     }
 
 }

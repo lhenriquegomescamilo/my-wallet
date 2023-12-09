@@ -20,7 +20,7 @@ class ValidationExpenseGatewayTest {
 
 
     @Test
-    fun `it should validate an empty publicId of category from expense`(): Unit = runBlocking {
+    fun `it should return an error when the  publicId of category is empty`(): Unit = runBlocking {
 
         val expense = Expense(
             category = Category(name = "Personal Trainer", publicId = ""),
@@ -28,7 +28,7 @@ class ValidationExpenseGatewayTest {
             owner = Owner(name = "Luis Camilo", publicId = "e175755a-9fca-4d0a-84b3-d74d87998c63"),
             type = ExpenseType.FIXED,
             status = ExpenseStatus.NOT_PAID,
-            description = ExpenseDescription("Box"),
+            description = ExpenseDescription(text = "Box"),
             expireDate = LocalDate.now().plusDays(20),
             paymentDate = null
         )
@@ -49,7 +49,7 @@ class ValidationExpenseGatewayTest {
             owner = Owner(name = "Luis Camilo", publicId = "e175755a-9fca-4d0a-84b3-d74d87998c63"),
             type = ExpenseType.FIXED,
             status = ExpenseStatus.NOT_PAID,
-            description = ExpenseDescription("Box"),
+            description = ExpenseDescription(text = "Box"),
             expireDate = LocalDate.now().plusDays(20),
             paymentDate = null
         )
@@ -70,7 +70,7 @@ class ValidationExpenseGatewayTest {
             owner = Owner(name = "Luis Camilo", publicId = "e175755a-9fca-4d0a-84b3-d74d87998c63"),
             type = ExpenseType.FIXED,
             status = ExpenseStatus.NOT_PAID,
-            description = ExpenseDescription("Box"),
+            description = ExpenseDescription(text = "Box"),
             expireDate = LocalDate.now().plusDays(20),
             paymentDate = null
         )
@@ -91,7 +91,7 @@ class ValidationExpenseGatewayTest {
             owner = Owner(name = "Luis Camilo", publicId = ""),
             type = ExpenseType.FIXED,
             status = ExpenseStatus.NOT_PAID,
-            description = ExpenseDescription("Box"),
+            description = ExpenseDescription(text = "Box"),
             expireDate = LocalDate.now().plusDays(20),
             paymentDate = null
         )
@@ -112,7 +112,7 @@ class ValidationExpenseGatewayTest {
             owner = Owner(name = "Luis Camilo", publicId = "5a21deb3-27b2-47e2-9d58-c20b236d6381"),
             type = ExpenseType.EMPTY,
             status = ExpenseStatus.NOT_PAID,
-            description = ExpenseDescription("Box"),
+            description = ExpenseDescription(text = "Box"),
             expireDate = LocalDate.now().plusDays(20),
             paymentDate = null
         )
@@ -133,7 +133,7 @@ class ValidationExpenseGatewayTest {
             owner = Owner(name = "Luis Camilo", publicId = "5a21deb3-27b2-47e2-9d58-c20b236d6381"),
             type = ExpenseType.VARIABLE,
             status = ExpenseStatus.EMPTY,
-            description = ExpenseDescription("Box"),
+            description = ExpenseDescription(text = "Box"),
             expireDate = LocalDate.now().plusDays(20),
             paymentDate = null
         )
@@ -153,7 +153,7 @@ class ValidationExpenseGatewayTest {
             owner = Owner(name = "Luis Camilo", publicId = "5a21deb3-27b2-47e2-9d58-c20b236d6381"),
             type = ExpenseType.VARIABLE,
             status = ExpenseStatus.NOT_PAID,
-            description = ExpenseDescription("Box"),
+            description = ExpenseDescription(text = "Box"),
             expireDate = LocalDate.now().plusDays(20),
             paymentDate = LocalDate.now()
         )
@@ -163,9 +163,6 @@ class ValidationExpenseGatewayTest {
         assertEquals(1, output.first.size)
         assertEquals("paymentDate", output.first.first().key)
     }
-
-
-
 
 
 }

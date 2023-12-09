@@ -2,19 +2,25 @@ package com.mywallet.domain.entity
 
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 data class Price(val value: BigDecimal, val currencyMoney: String)
 
 enum class ExpenseType {
     FIXED, VARIABLE, EMPTY;
+
+    companion object {
+        fun byNameIgnoreCaseOrEmpty(input: String): ExpenseType {
+            return entries.firstOrNull { it.name.equals(input, true) } ?: EMPTY
+        }
+    }
 }
 
 enum class ExpenseStatus {
     PAID, NOT_PAID, EMPTY;
 }
 
-data class ExpenseDescription(val description: String) {
+data class ExpenseDescription(val text: String) {
 
 }
 

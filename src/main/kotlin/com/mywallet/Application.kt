@@ -6,15 +6,18 @@ import com.expediagroup.graphql.server.ktor.graphQLPostRoute
 import com.expediagroup.graphql.server.ktor.graphQLSDLRoute
 import com.expediagroup.graphql.server.ktor.graphiQLRoute
 import com.mywallet.application.category.usecases.CreateCategoryUseCase
+import com.mywallet.application.expense.usecases.CreateExpenseUseCase
 import com.mywallet.application.owner.usecases.CreateOwnerUseCase
 import com.mywallet.application.owner.usecases.QueryOwnerUseCase
-import com.mywallet.infrastructure.category.gateways.CategoryGateway
+import com.mywallet.infrastructure.category.gateways.CategoryRepository
 import com.mywallet.infrastructure.category.gateways.CategoryValidation
 import com.mywallet.infrastructure.category.graphql.CategoryMutation
 import com.mywallet.infrastructure.category.graphql.CategoryQuery
+import com.mywallet.infrastructure.expense.gatways.CreateExpenseGatewayRepository
+import com.mywallet.infrastructure.expense.gatways.ValidationExpenseGateway
+import com.mywallet.infrastructure.expense.graphql.ExpenseMutation
 import com.mywallet.infrastructure.owner.gateways.CreateOwnerRepository
 import com.mywallet.infrastructure.owner.gateways.QueryOwnerRepository
-import com.mywallet.infrastructure.owner.gateways.ValidateOwnerGateway
 import com.mywallet.infrastructure.owner.graphql.OwnerMutation
 import com.mywallet.infrastructure.owner.graphql.OwnerQuery
 import com.mywallet.plugins.DatabaseConnectionConfig
@@ -69,7 +72,12 @@ fun main() {
                 OwnerMutation(
                     CreateOwnerUseCase(
                         createOwnerRepositoryGateway = CreateOwnerRepository(neo4jConnection),
-                        validateOwnerGateway = ValidateOwnerGateway()
+                    )
+                ),
+                ExpenseMutation(
+                    useCase = CreateExpenseUseCase(
+                        expenseValidation = ValidationExpenseGateway(),
+                        expenseGatewayRepository = CreateExpenseGatewayRepository(neo4jConnection)
                     )
                 )
             )
