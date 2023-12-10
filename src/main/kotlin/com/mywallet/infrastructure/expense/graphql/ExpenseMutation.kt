@@ -63,7 +63,7 @@ data class ExpenseInput(
             expireDate = LocalDate.parse(expireDate.date, DateTimeFormatter.ofPattern(expireDate.format)),
             paymentDate = null,
             type = ExpenseType.byNameIgnoreCaseOrEmpty(type),
-            status = ExpenseStatus.EMPTY,
+            status = ExpenseStatus.byNameIgnoreCaseOrEmpty(status),
             description = ExpenseDescription(text = description.text)
         )
     }

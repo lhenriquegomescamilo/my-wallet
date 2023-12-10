@@ -12,20 +12,21 @@ import com.mywallet.infrastructure.owner.gateways.CreateOwnerRepository
 import com.mywallet.plugins.MyWalletIntegrationConfig
 import com.mywallet.plugins.Neo4jConnection
 import com.mywallet.plugins.asJsonPrimitive
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
+import com.mywallet.plugins.httpGraphql
+import com.mywallet.plugins.isValidUUID
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.testing.testApplication
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlinx.serialization.json.buildJsonObject
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 class ExpenseIT : MyWalletIntegrationConfig() {
 
@@ -62,23 +63,17 @@ class ExpenseIT : MyWalletIntegrationConfig() {
             }
             """.asJsonPrimitive()
 
-
-        val bodyRequest = buildJsonObject {
-            put("query", query)
-        }
-        val client = createClient {
-            install(ContentNegotiation) {
-                json()
-            }
-        }
-
-        val response = client.post("/graphql") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json)
-            contentType(ContentType.Application.Json)
-            setBody(bodyRequest)
-        }
-
+        val response = httpGraphql(query)
+        val body = response.bodyAsText()
+        val output = Json.parseToJsonElement(body)
         assertEquals(HttpStatusCode.OK, response.status)
+        assertNull(output.jsonObject["errors"]?.jsonArray?.get(0), "should not contain any error")
+        val expensePublicId = output.jsonObject["data"]
+            ?.jsonObject?.get("createExpense")
+            ?.jsonObject?.get("publicId")
+            ?.jsonPrimitive?.content
+        assertNotNull(expensePublicId)
+        assertTrue(isValidUUID(expensePublicId), "should contain a valid expense public id")
 
     }
 

@@ -2,7 +2,6 @@ package com.mywallet.domain.entity
 
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.*
 
 data class Price(val value: BigDecimal, val currencyMoney: String)
 
@@ -18,6 +17,11 @@ enum class ExpenseType {
 
 enum class ExpenseStatus {
     PAID, NOT_PAID, EMPTY;
+
+    companion object {
+        fun byNameIgnoreCaseOrEmpty(input: String): ExpenseStatus =
+            entries.firstOrNull { it.name.equals(input, true) } ?: EMPTY
+    }
 }
 
 data class ExpenseDescription(val text: String) {
@@ -25,7 +29,7 @@ data class ExpenseDescription(val text: String) {
 }
 
 data class Expense(
-    val publicId: String = UUID.randomUUID().toString(),
+    val publicId: String = "",
     val category: Category,
     val price: Price,
     val owner: Owner,
@@ -38,7 +42,7 @@ data class Expense(
 
 typealias ErrorsOrExpense = Pair<List<ErrorMessage>, Expense>
 
-sealed class ExpenseValidation(override val name: String = "", override val key: String = ""): Constraints(name, key) {
+sealed class ExpenseValidation(override val name: String = "", override val key: String = "") : Constraints(name, key) {
     class CategoryPublicIdError(
         override val name: String = "Property publicId couldn't be empty",
         override val key: String = "category.publicId"

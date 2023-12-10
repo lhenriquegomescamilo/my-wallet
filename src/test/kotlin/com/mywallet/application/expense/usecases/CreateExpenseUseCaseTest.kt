@@ -35,7 +35,6 @@ class CreateExpenseUseCaseTest {
 
         val createExpenseGateway = object : CreateExpenseGateway {
             override suspend fun create(expense: Expense) = expense
-            override suspend fun checkIfExists(input: Expense) = false
         }
 
         val validationGateway = object : ValidationGateway<Expense> {
@@ -48,36 +47,7 @@ class CreateExpenseUseCaseTest {
         val result = CreateExpenseUseCase(createExpenseGateway, validationGateway).execute(expense)
         assertTrue(result.isSuccess)
     }
-
-    @Test
-    fun `it should be an error when fixed expense already exists `(): Unit = runBlocking {
-        val expense = Expense(
-            category = Category(name = "Personal Trainer"),
-            price = Price(value = BigDecimal.valueOf(100.0), currencyMoney = "EUR"),
-            owner = Owner(name = "Luis Camilo"),
-            type = ExpenseType.FIXED,
-            status = ExpenseStatus.NOT_PAID,
-            description = ExpenseDescription("Box"),
-            expireDate = LocalDate.now().plusDays(20),
-            paymentDate = null
-        )
-
-        val createExpenseGateway = object : CreateExpenseGateway {
-            override suspend fun create(expense: Expense) = expense
-            override suspend fun checkIfExists(input: Expense) = true
-        }
-
-        val validationGateway = object : ValidationGateway<Expense> {
-            override suspend fun validate(input: Expense): Pair<List<ErrorMessage>, Expense> {
-                return Pair(emptyList(), input)
-            }
-
-        }
-
-        val result = CreateExpenseUseCase(createExpenseGateway, validationGateway).execute(expense)
-        assertTrue(result.isFailure)
-    }
-
+    
     @Test
     fun `it should return a category error when the publicId is not defined`(): Unit = runBlocking {
         val expense = Expense(
@@ -93,7 +63,6 @@ class CreateExpenseUseCaseTest {
 
         val createExpenseGateway = object : CreateExpenseGateway {
             override suspend fun create(expense: Expense) = expense
-            override suspend fun checkIfExists(input: Expense) = false
         }
 
         val validationGateway = ValidationExpenseGateway()
