@@ -7,6 +7,7 @@ import com.expediagroup.graphql.server.ktor.graphQLSDLRoute
 import com.expediagroup.graphql.server.ktor.graphiQLRoute
 import com.mywallet.application.category.usecases.CreateCategoryUseCase
 import com.mywallet.application.expense.usecases.CreateExpenseUseCase
+import com.mywallet.application.expense.usecases.QueryExpenseUseCase
 import com.mywallet.application.owner.usecases.CreateOwnerUseCase
 import com.mywallet.application.owner.usecases.QueryOwnerUseCase
 import com.mywallet.infrastructure.category.gateways.CategoryRepository
@@ -14,8 +15,10 @@ import com.mywallet.infrastructure.category.gateways.CategoryValidation
 import com.mywallet.infrastructure.category.graphql.CategoryMutation
 import com.mywallet.infrastructure.category.graphql.CategoryQuery
 import com.mywallet.infrastructure.expense.gatways.CreateExpenseGatewayRepository
+import com.mywallet.infrastructure.expense.gatways.ExpenseQueryRepository
 import com.mywallet.infrastructure.expense.gatways.ValidationExpenseGateway
 import com.mywallet.infrastructure.expense.graphql.ExpenseMutation
+import com.mywallet.infrastructure.expense.graphql.ExpenseQuery
 import com.mywallet.infrastructure.owner.gateways.CreateOwnerRepository
 import com.mywallet.infrastructure.owner.gateways.QueryOwnerRepository
 import com.mywallet.infrastructure.owner.graphql.OwnerMutation
@@ -60,7 +63,8 @@ fun main() {
                     queryOwnerUseCase = QueryOwnerUseCase(
                         queryOwnerGateway = QueryOwnerRepository(neo4jConnection)
                     )
-                )
+                ),
+                ExpenseQuery(QueryExpenseUseCase(ExpenseQueryRepository(neo4jConnection)))
             )
             mutations = listOf(
                 CategoryMutation(
