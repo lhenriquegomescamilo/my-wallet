@@ -15,7 +15,7 @@ class CreateExpenseUseCase(
         if (validations.isNotEmpty()) {
             return Result.failure(ValidationError(validations))
         }
-        return kotlin.runCatching { expenseGatewayRepository.create(input) }
+        return runCatching { expenseGatewayRepository.create(input) }
     }
 
 }

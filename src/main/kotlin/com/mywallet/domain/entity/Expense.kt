@@ -24,9 +24,7 @@ enum class ExpenseStatus {
     }
 }
 
-data class ExpenseDescription(val text: String) {
-
-}
+data class ExpenseDescription(val text: String)
 
 data class Expense(
     val publicId: String = "",

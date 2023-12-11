@@ -18,8 +18,13 @@ class CreateExpenseGatewayRepository(private val connection: DatabaseConnection<
 
         val expendedIn = owner.relationshipTo(category, "EXPENDED_IN")
             .named("expendedIn")
-            .withProperties("price", literalOf<Double>(expense.price.value.toDouble()))
-            .withProperties("publicId", literalOf<String>(UUID.randomUUID().toString()))
+            .withProperties(
+                mapOf(
+                    "price" to literalOf<Double>(expense.price.value.toDouble()),
+                    "publicId" to literalOf<String>(UUID.randomUUID().toString())
+                )
+            )
+
 
         val statement = match(owner)
             .match(category)
