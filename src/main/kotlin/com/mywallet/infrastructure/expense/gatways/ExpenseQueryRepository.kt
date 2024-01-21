@@ -2,7 +2,7 @@ package com.mywallet.infrastructure.expense.gatways
 
 import com.mywallet.DatabaseConnection
 import com.mywallet.application.expense.usecases.ExpenseQueryGateway
-import com.mywallet.application.expense.usecases.Page
+import com.mywallet.application.expense.usecases.PageExpense
 import com.mywallet.domain.entity.Category
 import com.mywallet.domain.entity.Expense
 import com.mywallet.domain.entity.ExpenseDescription
@@ -20,7 +20,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 class ExpenseQueryRepository(private val connection: DatabaseConnection<Session>) : ExpenseQueryGateway {
-    override fun findExpensesPaged(offset: Int, limit: Int): Page<Expense> =
+    override fun findExpensesPaged(offset: Int, limit: Int): PageExpense =
         connection.session.executeRead { transaction ->
             val category = node("Category").named("category")
             val owner = node("Owner").named("owner")
@@ -38,7 +38,7 @@ class ExpenseQueryRepository(private val connection: DatabaseConnection<Session>
             val statement = match(expandedIn).returning(Functions.count(Cypher.asterisk())).build()
             val resultCounter = transaction.run(statement.cypher)
             val counter = resultCounter.single().get(0).asInt()
-            Page(data = expenses, counter = counter)
+            PageExpense(data = expenses, counter = counter)
         }
 
     private fun recordToExpense(record: Record): Expense {

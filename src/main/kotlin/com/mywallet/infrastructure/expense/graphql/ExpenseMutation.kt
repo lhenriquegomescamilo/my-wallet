@@ -10,8 +10,11 @@ import com.mywallet.domain.entity.ExpenseType
 import com.mywallet.domain.entity.Owner
 import com.mywallet.domain.entity.Price
 import com.mywallet.domain.entity.ValidationError
+import com.mywallet.infrastructure.category.graphql.CategoryOutput
 import com.mywallet.infrastructure.category.graphql.dataFetcherResult
 import com.mywallet.infrastructure.category.graphql.graphqlError
+import com.mywallet.infrastructure.owner.graphql.OwnerOutput
+import com.mywallet.infrastructure.owner.graphql.asOutput
 import graphql.execution.DataFetcherResult
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -24,7 +27,7 @@ class ExpenseMutation(private val useCase: UseCase<Expense>) : Mutation {
             .map { dataFetcherResult { data(it.asOutput()) } }
             .getOrElse { exception ->
                 dataFetcherResult {
-                    data(ExpenseOutput(publicId = ""))
+                    data(ExpenseOutput.asEmptyObject())
 
                     if (exception is ValidationError) {
                         exception.validations
@@ -42,8 +45,20 @@ class ExpenseMutation(private val useCase: UseCase<Expense>) : Mutation {
     }
 }
 
-private fun Expense.asOutput(): ExpenseOutput {
-    return ExpenseOutput(publicId = this.publicId)
+fun Expense.asOutput(): ExpenseOutput {
+    return ExpenseOutput(
+        publicId = this.publicId,
+        category = this.category.asOutput(),
+        price = this.price.asOutput(),
+        owner = this.owner.asOutput(),
+        type = this.type,
+        status = this.status,
+        description = this.description,
+        expireDate = this.expireDate.format(DateTimeFormatter.ISO_DATE),
+        paymentDate = this.paymentDate?.format(DateTimeFormatter.ISO_DATE)
+
+
+    )
 }
 
 data class ExpenseInput(
@@ -71,9 +86,36 @@ data class ExpenseInput(
 
 data class PublicId(val publicId: String)
 data class PriceInput(val value: Double, val currencyMoney: String)
+data class PriceOutput(val value: Double, val currencyMoney: String)
 
 data class ExpenseDescriptionInput(val text: String)
 
 data class ExpireDateInput(val date: String, val format: String)
 
-data class ExpenseOutput(val publicId: String)
+data class ExpenseOutput(
+    val publicId: String = "",
+    val category: CategoryOutput,
+    val price: PriceOutput,
+    val owner: OwnerOutput,
+    val type: ExpenseType,
+    val status: ExpenseStatus,
+    val description: ExpenseDescription,
+    val expireDate: String,
+    val paymentDate: String? = null
+) {
+    companion object {
+        fun asEmptyObject(): ExpenseOutput {
+            return ExpenseOutput(
+                publicId = "",
+                category = CategoryOutput(publicId = "", name = ""),
+                price = PriceOutput(value = 0.0, currencyMoney = ""),
+                owner = OwnerOutput("", ""),
+                status = ExpenseStatus.EMPTY,
+                type = ExpenseType.EMPTY,
+                description = ExpenseDescription(""),
+                expireDate = "",
+                paymentDate = ""
+            )
+        }
+    }
+}

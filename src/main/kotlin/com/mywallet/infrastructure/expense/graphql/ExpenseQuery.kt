@@ -1,16 +1,17 @@
 package com.mywallet.infrastructure.expense.graphql
 
 import com.expediagroup.graphql.server.operations.Query
-import com.mywallet.application.expense.usecases.Page
+import com.mywallet.application.expense.usecases.PageExpenseOutput
 import com.mywallet.application.expense.usecases.QueryExpenseUseCase
-import com.mywallet.domain.entity.Expense
 
 
 data class ExpenseOutputQuery(val publicId: String)
-class ExpenseQuery(val queryExpenseUseCase: QueryExpenseUseCase) : Query {
+class ExpenseQuery(private val queryExpenseUseCase: QueryExpenseUseCase) : Query {
 
-    fun findExpenses(offset: Int, limit: Int): Page<Expense> {
-        return queryExpenseUseCase.execute(offset, limit)
+    fun findExpenses(offset: Int, limit: Int): PageExpenseOutput {
+        val page = queryExpenseUseCase.execute(offset, limit)
+        val expenseOutputs = page.data.map { it.asOutput() }
+        return PageExpenseOutput(expenseOutputs, page.counter)
     }
 
 }

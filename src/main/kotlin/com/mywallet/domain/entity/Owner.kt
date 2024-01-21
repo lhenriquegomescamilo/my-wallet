@@ -1,6 +1,7 @@
 package com.mywallet.domain.entity
 
 data class Owner(val publicId: String = "", val name: String)
+data class OwnerOutput(val publicId: String = "", val name: String)
 
 sealed class OwnerConstraint(name: String = "", key: String = "") : Constraints(name, key) {
     class OwnerEmptyNameConstraints(

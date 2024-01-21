@@ -1,9 +1,12 @@
 package com.mywallet.domain.entity
 
+import com.mywallet.infrastructure.expense.graphql.PriceOutput
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class Price(val value: BigDecimal, val currencyMoney: String)
+data class Price(val value: BigDecimal, val currencyMoney: String) {
+    fun asOutput(): PriceOutput = PriceOutput(this.value.toDouble(), this.currencyMoney)
+}
 
 enum class ExpenseType {
     FIXED, VARIABLE, EMPTY;
